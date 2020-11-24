@@ -4,8 +4,8 @@ namespace TestApp\Services;
 
 class MyService
 {
-    public function getData()
+    public function getData($orderBy): array
     {
-        return collect([]);
+        return [];
     }
 }
