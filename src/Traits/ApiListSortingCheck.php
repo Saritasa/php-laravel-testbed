@@ -23,7 +23,7 @@ trait ApiListSortingCheck
             $response = $this->getJson($url."?order_by=$orderBy&per_page=$count", $auth)->assertOk();
 
             // Set the singular form of English words for the nested keys
-            $key = collect(explode('.', $orderBy))->map(function(string $part) {
+            $key = collect(explode('.', $orderBy))->map(function (string $part) {
                 return Str::singular($part);
             })->implode('.');
 
@@ -79,7 +79,8 @@ trait ApiListSortingCheck
     }
 
     /**
-     *  Check that API returns list sorted by specified fields (order by multiple fields - check for combinations of passed fields).
+     *  Check that API returns list sorted by specified fields
+     *  (order by multiple fields - check for combinations of passed fields).
      *
      * @param string $url Api endpoint to check
      * @param int $count Count of created models
