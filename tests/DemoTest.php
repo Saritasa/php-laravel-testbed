@@ -2,8 +2,6 @@
 
 namespace Saritasa\LaravelTestbed\Tests;
 
-use PHPUnit\Framework\TestCase;
-
 /**
  * Check that unit tests configured and can be run.
  */
