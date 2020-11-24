@@ -1,6 +1,6 @@
 <?php
 
-namespace Saritasa\LaravelTestbed\Tests\App\Exceptions;
+namespace TestApp\Exceptions;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;

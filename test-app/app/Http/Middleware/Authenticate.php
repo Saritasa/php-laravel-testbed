@@ -1,6 +1,6 @@
 <?php
 
-namespace Saritasa\LaravelTestbed\Tests\App\Http\Middleware;
+namespace TestApp\Http\Middleware;
 
 use Closure;
 use Illuminate\Auth\AuthenticationException;

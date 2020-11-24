@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Saritasa\LaravelTestbed\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -14,7 +14,7 @@ trait CreatesApplication
      */
     public function createApplication()
     {
-        $app = require __DIR__.'/bootstrap/app.php';
+        $app = require __DIR__.'/../test-app/bootstrap/app.php';
 
         $app->make(Kernel::class)->bootstrap();
 

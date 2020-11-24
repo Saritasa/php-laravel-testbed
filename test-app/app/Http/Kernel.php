@@ -1,6 +1,6 @@
 <?php
 
-namespace Saritasa\LaravelTestbed\Tests\App\Http;
+namespace TestApp\Http;
 
 use Saritasa\LaravelTestbed\Tests\App\Http\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
