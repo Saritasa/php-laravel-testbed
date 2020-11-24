@@ -1,20 +1,14 @@
 <?php
 
-namespace Saritasa\LaravelTestbed\Tests;
+namespace Saritasa\LaravelTestbed\Tests\Unit;
+
+use PHPUnit\Framework\TestCase;
 
 /**
  * Check that unit tests configured and can be run.
  */
 class DemoTest extends TestCase
 {
-    use CreatesApplication;
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->createApplication();
-    }
-
     /**
      * Simple test to check that unit tests working.
      */

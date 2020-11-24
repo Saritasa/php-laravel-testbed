@@ -2,7 +2,7 @@
 
 namespace TestApp\Http;
 
-use Saritasa\LaravelTestbed\Tests\App\Http\Middleware\Authenticate;
+use TestApp\Http\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
