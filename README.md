@@ -1,6 +1,6 @@
 # Laravel Testbed
 
-[![Build Status](https://travis-ci.org/Saritasa/php-laravel-testbed.svg?branch=master)](https://travis-ci.org/Saritasa/php-laravel-testbed)
+[![Build Status](https://github.com/Saritasa/php-laravel-testbed/workflows/build/badge.svg)](https://github.com/Saritasa/php-laravel-testbed/actions)
 [![CodeCov](https://codecov.io/gh/Saritasa/php-laravel-testbed/branch/master/graph/badge.svg)](https://codecov.io/gh/Saritasa/php-laravel-testbed)
 [![Release](https://img.shields.io/github/release/Saritasa/php-laravel-testbed.svg)](https://github.com/Saritasa/php-laravel-testbed/releases)
 [![PHPv](https://img.shields.io/packagist/php-v/saritasa/laravel-testbed.svg)](http://www.php.net)
