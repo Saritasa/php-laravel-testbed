@@ -2,11 +2,16 @@
 
 namespace Saritasa\LaravelTestbed\Tests\Feature;
 
+use Illuminate\Database\Eloquent\Collection;
 use Mockery;
+use PHPUnit\Framework\AssertionFailedError;
+use Saritasa\LaravelTestbed\Traits\ApiListSortingCheck;
 use TestApp\Services\MyService;
 
 class SampleFeatureTest extends TestCase
 {
+    use ApiListSortingCheck;
+
     public function testHttpRequest()
     {
         return $this->getJson('api/test')->assertOk();
@@ -30,5 +35,82 @@ class SampleFeatureTest extends TestCase
         [$user1, $user2] = $data;
         self::assertEquals(1, $user1['id']);
         self::assertEquals(2, $user2['id']);
+    }
+
+    /**
+     * Test sorting by single column.
+     *
+     * @param Collection $resultData Collection of data
+     * @param string $sortingField Sorting field
+     * @param \Exception|null $expectedException Expected exception
+     *
+     * @dataProvider sortingData
+     */
+    public function testSorting(Collection $resultData, string $sortingField, $expectedException = null)
+    {
+        if ($expectedException) {
+            $this->expectException($expectedException);
+        }
+
+        $serviceMock = Mockery::mock(MyService::class);
+        $serviceMock->shouldReceive('getData')->withArgs([$sortingField])->andReturn($resultData);
+        $serviceMock->shouldReceive('getData')->withArgs(["-".$sortingField])
+            ->andReturn($resultData->reverse());
+
+        $this->app->bind(MyService::class, function () use ($serviceMock) {
+            return $serviceMock;
+        });
+
+        $count = $resultData->count();
+
+        $this->assertSortingWorks("api/test-order-by", $count, [$sortingField], []);
+    }
+
+    public function sortingData()
+    {
+        return [
+            'correct sorted list (by name)' => [
+               new Collection([
+                   ['id' => 1, 'name' => "Alex"],
+                   ['id' => 2, 'name' => "Bill"],
+                   ['id' => 3, 'name' => "Chuck"],
+                   ['id' => 4, 'name' => "Tim"],
+                   ['id' => 5, 'name' => "Wood"],
+               ]),
+                'name'
+            ],
+            'incorrect sorted list (by name)' => [
+                new Collection([
+                    ['id' => 2, 'name' => "Bill"],
+                    ['id' => 1, 'name' => "Alex"],
+                    ['id' => 5, 'name' => "Wood"],
+                    ['id' => 3, 'name' => "Chuck"],
+                    ['id' => 4, 'name' => "Tim"],
+                ]),
+                'name',
+                AssertionFailedError::class,
+            ],
+            'correct sorted list with nullable values (by name)' => [
+                new Collection([
+                    ['id' => 5, 'name' => null],
+                    ['id' => 2, 'name' => "Bill"],
+                    ['id' => 3, 'name' => "Chuck"],
+                    ['id' => 4, 'name' => "Tim"],
+                    ['id' => 1, 'name' => null],
+                ]),
+                'name',
+            ],
+            'incorrect sorted list with nullable values (by name)' => [
+                new Collection([
+                    ['id' => 2, 'name' => "Bill"],
+                    ['id' => 3, 'name' => "Chuck"],
+                    ['id' => 1, 'name' => null],
+                    ['id' => 5, 'name' => null],
+                    ['id' => 4, 'name' => "Tim"],
+                ]),
+                'name',
+                AssertionFailedError::class,
+            ],
+        ];
     }
 }

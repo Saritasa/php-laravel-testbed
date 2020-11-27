@@ -5,6 +5,7 @@ namespace Saritasa\LaravelTestbed\Traits;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\AssertionFailedError;
 
 /** Checking the sorting work */
 trait ApiListSortingCheck
@@ -21,13 +22,16 @@ trait ApiListSortingCheck
     {
         collect($sortingFields)->each(function (string $orderBy) use ($url, $auth, $count) {
             $response = $this->getJson($url."?order_by=$orderBy&per_page=$count", $auth)->assertOk();
+            $results = collect($response->json('results'));
+
+            $this->checkSortListWithNullableValues($results, $orderBy);
 
             // Set the singular form of English words for the nested keys
             $key = collect(explode('.', $orderBy))->map(function (string $part) {
                 return Str::singular($part);
             })->implode('.');
 
-            self::assertGreaterThanOrEqual($count, $response->original->count());
+            self::assertGreaterThanOrEqual($count, $results->count());
 
             for ($current = 0; $current < $count; $current++) {
                 $next = $current + 1;
@@ -174,5 +178,22 @@ trait ApiListSortingCheck
         $expected->each(function ($value, int $key) use ($actual) {
             self::assertEquals($value, $actual->offsetGet($key));
         });
+    }
+
+    public function checkSortListWithNullableValues(Collection $data, string $sortingField)
+    {
+        $filteredData = $data->filter(function ($result) use ($sortingField) {
+            return $result[$sortingField] != null;
+        });
+
+        $firstKey = $filteredData->keys()->first();
+        $lastKey = $filteredData->keys()->last();
+
+        for ($i = $firstKey; $i < $lastKey; $i++) {
+            $next = $filteredData[$i+1] ?? null;
+            if (!$next) {
+                throw new AssertionFailedError('Sorting is wrong!');
+            }
+        }
     }
 }
