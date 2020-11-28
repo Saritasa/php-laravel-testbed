@@ -20,10 +20,10 @@ class SampleFeatureTest extends TestCase
     public function testWithMock()
     {
         $serviceMock = Mockery::mock(MyService::class);
-        $serviceMock->shouldReceive('getData')->withArgs(['field1'])->andReturn([
+        $serviceMock->shouldReceive('getData')->withArgs(['field1'])->andReturn(new Collection([
             ['id' => 1, 'name' => 'Wood'],
             ['id' => 2, 'name' => 'Chuck'],
-        ]);
+        ]));
 
         $this->app->bind(MyService::class, function () use ($serviceMock) {
             return $serviceMock;
@@ -66,6 +66,7 @@ class SampleFeatureTest extends TestCase
         $this->assertSortingWorks("api/test-order-by", $count, [$sortingField], []);
     }
 
+    /** Data for testing sorting by single field */
     public function sortingData()
     {
         return [
@@ -93,10 +94,10 @@ class SampleFeatureTest extends TestCase
             'correct sorted list with nullable values (by name)' => [
                 new Collection([
                     ['id' => 5, 'name' => null],
+                    ['id' => 1, 'name' => null],
                     ['id' => 2, 'name' => "Bill"],
                     ['id' => 3, 'name' => "Chuck"],
                     ['id' => 4, 'name' => "Tim"],
-                    ['id' => 1, 'name' => null],
                 ]),
                 'name',
             ],
@@ -109,6 +110,120 @@ class SampleFeatureTest extends TestCase
                     ['id' => 4, 'name' => "Tim"],
                 ]),
                 'name',
+                AssertionFailedError::class,
+            ],
+        ];
+    }
+
+    /**
+     * Test sorting by single column.
+     *
+     * @param Collection $resultData Collection of data
+     * @param string[] $sortingFields Sorting fields
+     * @param \Exception|null $expectedException Expected exception
+     *
+     * @dataProvider multiSortingData
+     */
+    public function testMultiSorting(Collection $resultData, array $sortingFields, $expectedException = null)
+    {
+        if ($expectedException) {
+            $this->expectException($expectedException);
+        }
+
+        $sortingString = collect($sortingFields)->implode(',');
+
+        $serviceMock = Mockery::mock(MyService::class);
+        $serviceMock->shouldReceive('getData')->with($sortingString)->andReturn($resultData);
+        $serviceMock->shouldReceive('getData')->with("-".$sortingString)
+            ->andReturn($resultData->reverse());
+
+        $this->app->bind(MyService::class, function () use ($serviceMock) {
+            return $serviceMock;
+        });
+
+        $count = $resultData->count();
+
+        $this->assertMultiSortingWorks("api/test-order-by", $count, $sortingFields, []);
+    }
+
+    /** Data for testing sorting by several fields */
+    public function multiSortingData()
+    {
+        return [
+            'correct sorted list (by name and id)' => [
+                new Collection([
+                    ['id' => 1, 'name' => "Alex"],
+                    ['id' => 2, 'name' => "Alex"],
+                    ['id' => 3, 'name' => "Chuck"],
+                    ['id' => 4, 'name' => "Tim"],
+                    ['id' => 5, 'name' => "Wood"],
+                ]),
+                ['name', 'id']
+            ],
+            'incorrect sorted list (by name and id)' => [
+                new Collection([
+                    ['id' => 2, 'name' => "Alex"],
+                    ['id' => 1, 'name' => "Alex"],
+                    ['id' => 3, 'name' => "Chuck"],
+                    ['id' => 4, 'name' => "Tim"],
+                    ['id' => 5, 'name' => "Wood"],
+                ]),
+                ['name', 'id'],
+                AssertionFailedError::class
+            ],
+            'correct sorted list (by id and name)' => [
+                new Collection([
+                    ['id' => 1, 'name' => "Bill"],
+                    ['id' => 1, 'name' => "Chuck"],
+                    ['id' => 1, 'name' => "Tim"],
+                    ['id' => 1, 'name' => "Wood"],
+                    ['id' => 2, 'name' => "Alex"],
+                ]),
+                ['id','name']
+            ],
+            'incorrect sorted list (by id and name)' => [
+                new Collection([
+                    ['id' => 1, 'name' => "Bill"],
+                    ['id' => 1, 'name' => "Chuck"],
+                    ['id' => 2, 'name' => "Alex"],
+                    ['id' => 1, 'name' => "Tim"],
+                    ['id' => 1, 'name' => "Wood"],
+                ]),
+                ['id','name'],
+                AssertionFailedError::class
+            ],
+            'correct sorted list with nullable values (by id and name)' => [
+                new Collection([
+                    ['id' => 1, 'name' => "Bill"],
+                    ['id' => 1, 'name' => "Chuck"],
+                    ['id' => 1, 'name' => "Tim"],
+                    ['id' => 1, 'name' => null],
+                    ['id' => null, 'name' => null],
+
+                ]),
+                ['id','name']
+            ],
+            'incorrect sorted list with nullable values in first field (by id and name)' => [
+                new Collection([
+                    ['id' => 1, 'name' => "Bill"],
+                    ['id' => null, 'name' => null],
+                    ['id' => 1, 'name' => "Chuck"],
+                    ['id' => 1, 'name' => "Tim"],
+                    ['id' => 1, 'name' => null],
+
+                ]),
+                ['id','name'],
+                AssertionFailedError::class,
+            ],
+            'incorrect sorted list with nullable values in second field (by id and name)' => [
+                new Collection([
+                    ['id' => 1, 'name' => "Bill"],
+                    ['id' => 1, 'name' => null],
+                    ['id' => 1, 'name' => "Chuck"],
+                    ['id' => 1, 'name' => "Tim"],
+                    ['id' => null, 'name' => null],
+                ]),
+                ['id','name'],
                 AssertionFailedError::class,
             ],
         ];
