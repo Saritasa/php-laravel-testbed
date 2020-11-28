@@ -110,10 +110,11 @@ trait ApiListSortingCheck
 
         $results = collect($response->json('results'));
 
+        $this->checkSortListWithNullableValues($results, $mainSortingField);
+
         self::assertGreaterThanOrEqual($count, $results->count());
 
-        $groups = $results->groupBy($mainSortingField);
-        $keys = $groups->keys();
+        $keys = $results->pluck($mainSortingField);
 
         foreach ($keys as $i => $value) {
             $nextValue = $keys[$i+1] ?? null;
@@ -130,12 +131,15 @@ trait ApiListSortingCheck
             }
         }
 
-        $selectedSorting->except($mainSortingField)->each(function (string $field) use ($groups, $count) {
+        $groups = $results->groupBy($mainSortingField);
+
+        $selectedSorting->except(0)->each(function (string $field) use ($groups, $count) {
             $groups->each(function (Collection $group) use ($field, $count) {
                 if ($group->count() > 1) {
-                    foreach ($group as $key => $value) {
-                        $currentValue = Arr::dot($value)[$field];
-                        $nextValue = Arr::dot($group->offsetGet($key))[$field];
+                    $this->checkSortListWithNullableValues($group, $field);
+                    for ($current = 0; $current < $group->count() - 1; $current++) {
+                        $currentValue = Arr::dot($group->offsetGet($current))[$field];
+                        $nextValue = Arr::dot($group->offsetGet($current + 1))[$field];
 
                         if ($nextValue) {
                             if (is_numeric($currentValue)) {
