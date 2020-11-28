@@ -135,9 +135,10 @@ trait ApiListSortingCheck
 
         $selectedSorting->except(0)->each(function (string $field) use ($groups, $count) {
             $groups->each(function (Collection $group) use ($field, $count) {
-                if ($group->count() > 1) {
+                $groupCount = $group->count();
+                if ($groupCount > 1) {
                     $this->checkSortListWithNullableValues($group, $field);
-                    for ($current = 0; $current < $group->count() - 1; $current++) {
+                    for ($current = 0; $current < $groupCount- 1; $current++) {
                         $currentValue = Arr::dot($group->offsetGet($current))[$field];
                         $nextValue = Arr::dot($group->offsetGet($current + 1))[$field];
 
