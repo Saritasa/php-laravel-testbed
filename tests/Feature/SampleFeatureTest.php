@@ -12,11 +12,13 @@ class SampleFeatureTest extends TestCase
 {
     use ApiListSortingCheck;
 
+    /** Test to check endpoint works */
     public function testHttpRequest()
     {
         return $this->getJson('api/test')->assertOk();
     }
 
+    /** Simple test with mock to check endpoint works */
     public function testWithMock()
     {
         $serviceMock = Mockery::mock(MyService::class);
@@ -46,7 +48,7 @@ class SampleFeatureTest extends TestCase
      *
      * @dataProvider sortingData
      */
-    public function testSorting(Collection $resultData, string $sortingField, $expectedException = null)
+    public function testSingleSorting(Collection $resultData, string $sortingField, $expectedException = null)
     {
         if ($expectedException) {
             $this->expectException($expectedException);
@@ -112,11 +114,53 @@ class SampleFeatureTest extends TestCase
                 'name',
                 AssertionFailedError::class,
             ],
+            'correct sorted list with nested keys (by contact.name)' => [
+                new Collection([
+                    ['id' => 1, 'contact' => ['name' => 'Alex']],
+                    ['id' => 2, 'contact' => ['name' => 'Bill']],
+                    ['id' => 3, 'contact' => ['name' => 'Chuck']],
+                    ['id' => 4, 'contact' => ['name' => 'Tim']],
+                    ['id' => 5, 'contact' => ['name' => 'Wood']],
+                ]),
+                'contacts.name'
+            ],
+            'incorrect sorted list with nested keys (by contact.name)' => [
+                new Collection([
+                    ['id' => 2, 'contact' => ['name' => 'Bill']],
+                    ['id' => 3, 'contact' => ['name' => 'Chuck']],
+                    ['id' => 4, 'contact' => ['name' => 'Tim']],
+                    ['id' => 5, 'contact' => ['name' => 'Wood']],
+                    ['id' => 1, 'contact' => ['name' => 'Alex']],
+                ]),
+                'contacts.name',
+                AssertionFailedError::class
+            ],
+            'correct sorted list with nested keys and nullable values (by contact.name)' => [
+                new Collection([
+                    ['id' => 3, 'contact' => ['name' => null]],
+                    ['id' => 4, 'contact' => ['name' => null]],
+                    ['id' => 1, 'contact' => ['name' => 'Alex']],
+                    ['id' => 2, 'contact' => ['name' => 'Bill']],
+                    ['id' => 5, 'contact' => ['name' => 'Wood']],
+                ]),
+                'contacts.name'
+            ],
+            'incorrect sorted list with nested keys and nullable values (by contact.name)' => [
+                new Collection([
+                    ['id' => 1, 'contact' => ['name' => 'Alex']],
+                    ['id' => 2, 'contact' => ['name' => 'Bill']],
+                    ['id' => 4, 'contact' => ['name' => null]],
+                    ['id' => 5, 'contact' => ['name' => null]],
+                    ['id' => 3, 'contact' => ['name' => 'Chuck']],
+                ]),
+                'contacts.name',
+                AssertionFailedError::class
+            ],
         ];
     }
 
     /**
-     * Test sorting by single column.
+     * Test sorting by several columns.
      *
      * @param Collection $resultData Collection of data
      * @param string[] $sortingFields Sorting fields
