@@ -160,7 +160,7 @@ trait ApiListSortingCheck
      *
      * @return string
      */
-    public function setSingularWordForm(string $field)
+    public function setSingularWordForm(string $field): string
     {
         return collect(explode('.', $field))->map(function (string $part) {
             return Str::singular($part);
