@@ -156,6 +156,31 @@ class SampleFeatureTest extends TestCase
                 'contacts.name',
                 AssertionFailedError::class
             ],
+            'correct sorted list with 2 level nested keys(by company.contact.name)' => [
+                new Collection([
+                    ['id' => 3, 'company' => [
+                        'name' => 'Alex inc.',
+                        'contact' => ['name' => 'Alex'],
+                    ]],
+                    ['id' => 4, 'company' => [
+                        'name' => 'Bill inc.',
+                        'contact' => ['name' => 'Bill'],
+                    ]],
+                    ['id' => 1, 'company' => [
+                        'name' => 'Chuck inc.',
+                        'contact' => ['name' => 'Chuck'],
+                    ]],
+                    ['id' => 2, 'company' => [
+                        'name' => 'Tim inc.',
+                        'contact' => ['name' => 'Tim'],
+                    ]],
+                    ['id' => 5, 'company' => [
+                        'name' => 'Wood inc.',
+                        'contact' => ['name' => 'Wood'],
+                    ]],
+                ]),
+                'companies.contacts.name'
+            ],
         ];
     }
 
@@ -269,6 +294,31 @@ class SampleFeatureTest extends TestCase
                 ]),
                 ['id','name'],
                 AssertionFailedError::class,
+            ],
+            'correct sorted list with 2 level nested keys (by company.contact.name, name)' => [
+                new Collection([
+                    ['id' => 3, 'company' => [
+                        'name' => 'Alex inc.',
+                        'contact' => ['name' => 'Alex'],
+                    ]],
+                    ['id' => 4, 'company' => [
+                        'name' => 'Bill inc.',
+                        'contact' => ['name' => 'Alex'],
+                    ]],
+                    ['id' => 1, 'company' => [
+                        'name' => 'Chuck inc.',
+                        'contact' => ['name' => 'Alex'],
+                    ]],
+                    ['id' => 2, 'company' => [
+                        'name' => 'Tim inc.',
+                        'contact' => ['name' => 'Tim'],
+                    ]],
+                    ['id' => 5, 'company' => [
+                        'name' => 'Wood inc.',
+                        'contact' => ['name' => 'Wood'],
+                    ]],
+                ]),
+                ['companies.contacts.name', 'name']
             ],
         ];
     }

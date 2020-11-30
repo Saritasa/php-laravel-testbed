@@ -63,7 +63,7 @@ trait ApiListSortingCheck
 
         self::assertGreaterThanOrEqual($count, $results->count());
 
-        $groups = $results->groupBy($mainSortingField);
+        $groups = $results->groupBy($this->setSingularWordForm($mainSortingField));
 
         $selectedSorting->except(0)->each(function (string $field) use ($groups, $count) {
             $groups->each(function (Collection $group) use ($field, $count) {
@@ -104,10 +104,7 @@ trait ApiListSortingCheck
      */
     public function assertBaseSorting(Collection $data, string $sortingField): void
     {
-        // Set the singular form of English words for the nested keys
-        $field = collect(explode('.', $sortingField))->map(function (string $part) {
-            return Str::singular($part);
-        })->implode('.');
+        $field = $this->setSingularWordForm($sortingField);
 
         $filteredData = $data->whereNotNull($field);
 
@@ -145,10 +142,7 @@ trait ApiListSortingCheck
      */
     public function assertReverseSorting(Collection $results, Collection $reverseResults, string $sortingField)
     {
-        // Set the singular form of English words for the nested keys
-        $field = collect(explode('.', $sortingField))->map(function (string $part) {
-            return Str::singular($part);
-        })->implode('.');
+        $field = $this->setSingularWordForm($sortingField);
 
         $expectedValues = $results->pluck($field)->reverse();
         $expectedKeys = $expectedValues->keys()->reverse();
@@ -157,5 +151,19 @@ trait ApiListSortingCheck
         $actualCollection = $reverseResults->pluck($field);
 
         $this->assertCollectionsEqual($expectedCollection, $actualCollection);
+    }
+
+    /**
+     * Set the singular form of English words.
+     *
+     * @param string $field Field to modify
+     *
+     * @return string
+     */
+    public function setSingularWordForm(string $field)
+    {
+        return collect(explode('.', $field))->map(function (string $part) {
+            return Str::singular($part);
+        })->implode('.');
     }
 }
