@@ -2,12 +2,10 @@
 
 namespace TestApp\Services;
 
-use Illuminate\Database\Eloquent\Collection;
-
 class MyService
 {
-    public function getData($orderBy): Collection
+    public function getData($orderBy): array
     {
-        return new Collection([]);
+        return [];
     }
 }
