@@ -7,11 +7,13 @@ use TestApp\Services\MyService;
 
 class SampleFeatureTest extends TestCase
 {
+    /** Test to check endpoint works */
     public function testHttpRequest()
     {
         return $this->getJson('api/test')->assertOk();
     }
 
+    /** Simple test with mock to check endpoint works */
     public function testWithMock()
     {
         $serviceMock = Mockery::mock(MyService::class);
