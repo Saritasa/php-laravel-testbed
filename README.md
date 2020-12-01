@@ -6,7 +6,7 @@
 [![PHPv](https://img.shields.io/packagist/php-v/saritasa/laravel-testbed.svg)](http://www.php.net)
 [![Downloads](https://img.shields.io/packagist/dt/saritasa/laravel-testbed.svg)](https://packagist.org/packages/saritasa/laravel-testbed)
 
-TODO: Project description
+Helpers for feature tests, like API sorting, authentication, registration, etc.
 
 ## Usage
 
@@ -16,6 +16,59 @@ Install the ```saritasa/laravel-testbed``` package:
 $ composer require saritasa/laravel-testbed
 ```
 
+### ApiListSortingCheck Trait
+Trait to check if sorting works correctly.
+
+Using trait:
+```php
+use Saritasa\LaravelTestbed\Traits\ApiListSortingCheck;
+
+/**
+ * Vendor tests.
+ */
+class VendorTest extends TestCase
+{
+    use ApiListSortingCheck;
+}
+```
+
+#### Available functions:
+```php
+/**
+ * Check that API returns list sorted by specified field (order by single field - check for each of passed fields).
+ **/
+public function assertSortingWorks(string $url, int $count, array $sortingFields, array $auth): void
+/**
+ * Check that API returns list sorted by specified fields
+ *  (order by multiple fields - check for combinations of passed fields).
+ **/
+public function assertMultiSortingWorks(string $url, int $count, array $sortingFields, array $auth): void
+```
+
+#### Examples:
+```php
+    /** Sorting options test */
+    public function testOrderBy()
+    {
+        $count = 15;
+        $auth = Helpers::createAndAuthenticateUser();
+
+        factory(Vendor::class, $count)->create();
+        
+        $this->assertSortingWorks("/api/vendors", $count, VendorListRequest::SORTING_FIELDS, $auth);
+    }
+
+    /** Multi sorting options test */
+    public function testMultiOrderBy()
+    {
+        $count = 15;
+        $auth = Helpers::createAndAuthenticateUser();
+
+        factory(Vendor::class, $count)->create();
+
+        $this->assertMultiSortingWorks("api/vendors", $count, VendorListRequest::SORTING_FIELDS, $auth);
+    }
+```
 
 ## Contributing
 See [CONTRIBUTING](CONTRIBUTING.md) and [Code of Conduct](CONDUCT.md),
