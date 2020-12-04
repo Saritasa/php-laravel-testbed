@@ -45,7 +45,7 @@ class VendorTest extends TestCase
  *
  * @return void
  */
-public function assertSortingWorks(string $url, int $count, array $sortingFields, array $auth, ?string $envelope): void
+public function assertSortingWorks(string $url, int $count, array $sortingFields, array $auth, ?string $envelope = null): void
 /**
  * Check that API returns list sorted by specified fields
  *  (order by multiple fields - check for combinations of passed fields).
@@ -58,7 +58,7 @@ public function assertSortingWorks(string $url, int $count, array $sortingFields
  *
  * @return void
  */
-public function assertMultiSortingWorks(string $url, int $count, array $sortingFields, array $auth, ?string $envelope): void
+public function assertMultiSortingWorks(string $url, int $count, array $sortingFields, array $auth, ?string $envelope = null): void
 ```
 
 #### Examples:
