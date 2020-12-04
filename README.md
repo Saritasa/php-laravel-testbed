@@ -89,6 +89,8 @@ public function assertMultiSortingWorks(string $url, int $count, array $sortingF
         $this->assertMultiSortingWorks("api/vendors", $count, VendorListRequest::SORTING_FIELDS, $auth, $envelope);
     }
 ```
+*NOTE: If the response does not contain an **envelope** (such as "results", "items", etc.), you do not need to send this parameter.*
+
 #### Sorting by single field
 ##### To sort by one field in ascending order, only the field name is used. For example:
 * api/vendors?order_by=name
