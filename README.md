@@ -34,30 +34,30 @@ class VendorTest extends TestCase
 
 #### Available functions:
 ```php
-    /**
-     * Check that API returns list sorted by specified field (order by single field - check for each of passed fields).
-     *
-     * @param string $url Api endpoint to check
-     * @param int $count Count of created models
-     * @param array|string[] $sortingFields Sorting fields to check
-     * @param array|string[] $auth Auth
-     * @param string|null $envelope Results envelope (like 'results', 'items', etc.)
-     *
-     * @return void
-     */
+/**
+ * Check that API returns list sorted by specified field (order by single field - check for each of passed fields).
+ *
+ * @param string $url Api endpoint to check
+ * @param int $count Count of created models
+ * @param array|string[] $sortingFields Sorting fields to check
+ * @param array|string[] $auth Auth
+ * @param string|null $envelope Results envelope (like 'results', 'items', etc.)
+ *
+ * @return void
+ */
 public function assertSortingWorks(string $url, int $count, array $sortingFields, array $auth, ?string $envelope): void
-    /**
-     * Check that API returns list sorted by specified fields
-     *  (order by multiple fields - check for combinations of passed fields).
-     *
-     * @param string $url Api endpoint to check
-     * @param int $count Count of created models
-     * @param array|string[] $sortingFields Sorting fields to check
-     * @param array|string[] $auth Auth
-     * @param string|null $envelope Results envelope (like 'results', 'items', etc.)
-     *
-     * @return void
-     */
+/**
+ * Check that API returns list sorted by specified fields
+ *  (order by multiple fields - check for combinations of passed fields).
+ *
+ * @param string $url Api endpoint to check
+ * @param int $count Count of created models
+ * @param array|string[] $sortingFields Sorting fields to check
+ * @param array|string[] $auth Auth
+ * @param string|null $envelope Results envelope (like 'results', 'items', etc.)
+ *
+ * @return void
+ */
 public function assertMultiSortingWorks(string $url, int $count, array $sortingFields, array $auth, ?string $envelope): void
 ```
 
