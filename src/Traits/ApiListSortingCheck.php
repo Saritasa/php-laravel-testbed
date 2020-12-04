@@ -60,7 +60,7 @@ trait ApiListSortingCheck
         int $count,
         array $sortingFields,
         array $auth,
-        ?string $envelope
+        ?string $envelope = null
     ): void {
         $selectedSorting = collect($sortingFields)->random(2);
         $sortingString = $selectedSorting->implode(',');
