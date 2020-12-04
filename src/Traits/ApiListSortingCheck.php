@@ -31,7 +31,7 @@ trait ApiListSortingCheck
         collect($sortingFields)->each(function (string $sortingField) use ($url, $auth, $count, $envelope) {
             $response = $this->getJson($url."?order_by=$sortingField&per_page=$count", $auth)->assertOk();
 
-            $results = collect($response->json($envelope));
+            $results = collect($response->json([$envelope]));
 
             self::assertGreaterThanOrEqual($count, $results->count());
 
@@ -39,7 +39,7 @@ trait ApiListSortingCheck
 
             $reverseResponse = $this->getJson($url."?order_by=-$sortingField&per_page=$count", $auth);
 
-            $this->assertReverseSorting($results, collect($reverseResponse->json($envelope)), $sortingField);
+            $this->assertReverseSorting($results, collect($reverseResponse->json([$envelope])), $sortingField);
         });
     }
 
@@ -69,7 +69,7 @@ trait ApiListSortingCheck
 
         $mainSortingField = $selectedSorting->first();
 
-        $results = collect($response->json($envelope));
+        $results = collect($response->json([$envelope]));
 
         $this->assertBaseSorting($results, $mainSortingField);
 
@@ -88,7 +88,7 @@ trait ApiListSortingCheck
 
         $responseReverse = $this->getJson($url."?order_by=-$sortingString&per_page=$count", $auth);
 
-        $this->assertReverseSorting($results, collect($responseReverse->json($envelope)), $mainSortingField);
+        $this->assertReverseSorting($results, collect($responseReverse->json([$envelope])), $mainSortingField);
     }
 
     /**
