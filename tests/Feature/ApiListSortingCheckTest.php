@@ -39,11 +39,13 @@ class ApiListSortingCheckTest extends TestCase
 
         $count = $resultCollection->count();
 
-        $this->assertSortingWorks("api/test-order-by", $count, [$sortingField], []);
+        $envelope = 'results';
+
+        $this->assertSortingWorks("api/test-order-by", $count, [$sortingField], [], $envelope);
     }
 
     /** Data for testing sorting by single field */
-    public function sortBySingleFieldDataExamples()
+    public function sortBySingleFieldDataExamples(): array
     {
         return [
             'correct sorted list (by name)' => [
@@ -188,11 +190,13 @@ class ApiListSortingCheckTest extends TestCase
 
         $count = $resultCollection->count();
 
-        $this->assertMultiSortingWorks("api/test-order-by", $count, $sortingFields, []);
+        $envelope = 'results';
+
+        $this->assertMultiSortingWorks("api/test-order-by", $count, $sortingFields, [], $envelope);
     }
 
     /** Data for testing sorting by several fields */
-    public function sortByMultipleFieldsDataExamples()
+    public function sortByMultipleFieldsDataExamples(): array
     {
         return [
             'correct sorted list (by name and id)' => [

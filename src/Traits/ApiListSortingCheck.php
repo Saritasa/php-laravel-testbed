@@ -17,15 +17,21 @@ trait ApiListSortingCheck
      * @param int $count Count of created models
      * @param array|string[] $sortingFields Sorting fields to check
      * @param array|string[] $auth Auth
+     * @param string|null $envelope Results envelope (like 'results', 'items', etc.)
      *
      * @return void
      */
-    public function assertSortingWorks(string $url, int $count, array $sortingFields, array $auth): void
-    {
-        collect($sortingFields)->each(function (string $sortingField) use ($url, $auth, $count) {
+    public function assertSortingWorks(
+        string $url,
+        int $count,
+        array $sortingFields,
+        array $auth,
+        ?string $envelope = null
+    ): void {
+        collect($sortingFields)->each(function (string $sortingField) use ($url, $auth, $count, $envelope) {
             $response = $this->getJson($url."?order_by=$sortingField&per_page=$count", $auth)->assertOk();
 
-            $results = collect($response->json('results'));
+            $results = collect($response->json($envelope));
 
             self::assertGreaterThanOrEqual($count, $results->count());
 
@@ -33,7 +39,7 @@ trait ApiListSortingCheck
 
             $reverseResponse = $this->getJson($url."?order_by=-$sortingField&per_page=$count", $auth);
 
-            $this->assertReverseSorting($results, collect($reverseResponse->json('results')), $sortingField);
+            $this->assertReverseSorting($results, collect($reverseResponse->json($envelope)), $sortingField);
         });
     }
 
@@ -45,11 +51,17 @@ trait ApiListSortingCheck
      * @param int $count Count of created models
      * @param array|string[] $sortingFields Sorting fields to check
      * @param array|string[] $auth Auth
+     * @param string|null $envelope Results envelope (like 'results', 'items', etc.)
      *
      * @return void
      */
-    public function assertMultiSortingWorks(string $url, int $count, array $sortingFields, array $auth): void
-    {
+    public function assertMultiSortingWorks(
+        string $url,
+        int $count,
+        array $sortingFields,
+        array $auth,
+        ?string $envelope
+    ): void {
         $selectedSorting = collect($sortingFields)->random(2);
         $sortingString = $selectedSorting->implode(',');
 
@@ -57,7 +69,7 @@ trait ApiListSortingCheck
 
         $mainSortingField = $selectedSorting->first();
 
-        $results = collect($response->json('results'));
+        $results = collect($response->json($envelope));
 
         $this->assertBaseSorting($results, $mainSortingField);
 
@@ -76,7 +88,7 @@ trait ApiListSortingCheck
 
         $responseReverse = $this->getJson($url."?order_by=-$sortingString&per_page=$count", $auth);
 
-        $this->assertReverseSorting($results, collect($responseReverse->json('results')), $mainSortingField);
+        $this->assertReverseSorting($results, collect($responseReverse->json($envelope)), $mainSortingField);
     }
 
     /**
