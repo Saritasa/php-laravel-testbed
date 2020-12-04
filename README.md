@@ -34,15 +34,31 @@ class VendorTest extends TestCase
 
 #### Available functions:
 ```php
-/**
- * Check that API returns list sorted by specified field (order by single field - check for each of passed fields).
- **/
-public function assertSortingWorks(string $url, int $count, array $sortingFields, array $auth): void
-/**
- * Check that API returns list sorted by specified fields
- *  (order by multiple fields - check for combinations of passed fields).
- **/
-public function assertMultiSortingWorks(string $url, int $count, array $sortingFields, array $auth): void
+    /**
+     * Check that API returns list sorted by specified field (order by single field - check for each of passed fields).
+     *
+     * @param string $url Api endpoint to check
+     * @param int $count Count of created models
+     * @param array|string[] $sortingFields Sorting fields to check
+     * @param array|string[] $auth Auth
+     * @param string|null $envelope Results envelope (like 'results', 'items', etc.)
+     *
+     * @return void
+     */
+public function assertSortingWorks(string $url, int $count, array $sortingFields, array $auth, ?string $envelope): void
+    /**
+     * Check that API returns list sorted by specified fields
+     *  (order by multiple fields - check for combinations of passed fields).
+     *
+     * @param string $url Api endpoint to check
+     * @param int $count Count of created models
+     * @param array|string[] $sortingFields Sorting fields to check
+     * @param array|string[] $auth Auth
+     * @param string|null $envelope Results envelope (like 'results', 'items', etc.)
+     *
+     * @return void
+     */
+public function assertMultiSortingWorks(string $url, int $count, array $sortingFields, array $auth, ?string $envelope): void
 ```
 
 #### Examples:
@@ -55,7 +71,9 @@ public function assertMultiSortingWorks(string $url, int $count, array $sortingF
 
         factory(Vendor::class, $count)->create();
         
-        $this->assertSortingWorks("/api/vendors", $count, VendorListRequest::SORTING_FIELDS, $auth);
+        $envelope = 'results';
+        
+        $this->assertSortingWorks("/api/vendors", $count, VendorListRequest::SORTING_FIELDS, $auth, $envelope);
     }
 
     /** Multi sorting options test */
@@ -65,10 +83,27 @@ public function assertMultiSortingWorks(string $url, int $count, array $sortingF
         $auth = Helpers::createAndAuthenticateUser();
 
         factory(Vendor::class, $count)->create();
+        
+        $envelope = 'results';
 
-        $this->assertMultiSortingWorks("api/vendors", $count, VendorListRequest::SORTING_FIELDS, $auth);
+        $this->assertMultiSortingWorks("api/vendors", $count, VendorListRequest::SORTING_FIELDS, $auth, $envelope);
     }
 ```
+#### Sorting by single field
+##### To sort by one field in ascending order, only the field name is used. For example:
+* api/vendors?order_by=name
+* api/vendors?order_by=contacts.name
+##### For sorting in descending order, the same is used, but with a minus. For example:
+* api/vendors?order_by=-name
+* api/vendors?order_by=-contacts.name
+
+#### Sorting by several fields
+##### To sort by multiple fields in ascending order, enumerate the field names. For example:
+* api/vendors?order_by=id,name
+* api/vendors?order_by=name,contacts.name
+##### For sorting in descending order, the same is used, but with a minus. For example:
+* api/vendors?order_by=-id,name
+* api/vendors?order_by=-id,-contacts.name
 
 ## Contributing
 See [CONTRIBUTING](CONTRIBUTING.md) and [Code of Conduct](CONDUCT.md),
